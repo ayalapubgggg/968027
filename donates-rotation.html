@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Tikfinity Overlay Preview</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #111;
+}
+
+.canvas {
+  width: 1920px;
+  height: 1080px;
+  margin: 0 auto;
+  position: relative;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* CONTENEDOR CENTRADO (NO TOCAR) */
+.stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ================= TEXTOS ================= */
+.title {
+  height: 40px;
+  color: white;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+
+  /* =====================================
+     🔧 ACA EDITÁS POSICIÓN DEL TEXTO 🔧
+     X = izquierda / derecha
+     Y = arriba / abajo (negativo = sube)
+     ===================================== */
+  transform: translate(76px, -560px);
+
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  position: absolute;
+}
+
+/* CAJA DONDE SE INTERCALAN (NO TOCAR) */
+.widget-box {
+  position: relative;
+  width: 600px;
+  height: 500px;
+}
+
+/* WIDGETS SUPERPUESTOS (NO TOCAR) */
+.widget {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.widget.active {
+  opacity: 1;
+}
+
+/* TOP GIFTER */
+.topgifter iframe {
+  border: 0;
+}
+
+/* RANKING */
+.clip {
+  width: 350px;
+  height: 500px;
+  overflow: hidden;
+}
+
+.clip iframe {
+  width: 900px;
+  height: 500px;
+  border: 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="canvas">
+  <div class="stage">
+
+    <!-- CAJA DE WIDGETS -->
+    <div class="widget-box">
+
+      <!-- TOP GIFTER -->
+      <div class="widget active topgifter">
+        <iframe
+          src="https://tikfinity.zerody.one/widget/topgifter?cid=2146077"
+          width="600"
+          height="400">
+        </iframe>
+      </div>
+
+      <!-- RANKING -->
+      <div class="widget ranking">
+        <div class="clip">
+          <iframe
+            src="https://tikfinity.zerody.one/widget/ranking?cid=2146077">
+          </iframe>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TEXTO RANKING -->
+    <div class="title" id="title-ranking">TOP 3 DEL MES</div>
+
+    <!-- TEXTO TOP GIFTER -->
+    <div class="title" id="title-donates">TOP DONATES</div>
+
+  </div>
+</div>
+
+<script>
+const widgets = document.querySelectorAll('.widget');
+const titleRanking = document.getElementById('title-ranking');
+const titleDonates = document.getElementById('title-donates');
+
+let current = 0;
+
+setInterval(() => {
+  widgets[current].classList.remove('active');
+  current = (current + 1) % widgets.length;
+  widgets[current].classList.add('active');
+
+  // RESET
+  titleRanking.style.opacity = '0';
+  titleDonates.style.opacity = '0';
+
+  // MOSTRAR TEXTO SEGÚN WIDGET
+  if (widgets[current].classList.contains('ranking')) {
+    titleRanking.style.opacity = '1';
+  } else {
+    titleDonates.style.opacity = '1';
+  }
+
+}, 15000); 
+</script>
+
+</body>
+</html>
