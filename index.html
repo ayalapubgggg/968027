@@ -1,115 +1,153 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Tikfinity Rotation</title>
+<meta charset="UTF-8">
+<title>Tikfinity Donate Rotation</title>
 
-  <style>
-    /* ===== RESET ===== */
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 1920px;
-      height: 1080px;
-      background: transparent;
-      overflow: hidden;
-    }
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent; /* FONDO TRANSPARENTE */
+}
 
-    /* ===== CONTENEDOR GENERAL ===== */
-    .canvas {
-      position: relative;
-      width: 1920px;
-      height: 1080px;
-      background: transparent;
-    }
+.canvas {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-    /* ===== BLOQUE CENTRADO ===== */
-    .center-box {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 400px;
-      height: 550px;
-      background: transparent;
-    }
+/* CONTENEDOR CENTRADO */
+.stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
-    /* ===== TEXTO RANKING ===== */
-    .title {
-      position: absolute;
-      top: -45px; /* ⬅️ ACÁ se mueve arriba / abajo el texto */
-      left: 61px; /* ⬅️ ACÁ se mueve izquierda / derecha */
-      color: white;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.7);
-      display: none;
-    }
+/* ================= TEXTOS ================= */
+.title {
+  position: absolute;
 
-    /* ===== WIDGETS ===== */
-    .widget {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 400px;
-      height: 500px;
-      border: none;
-      background: transparent;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
+  /* 👇 MOVER TEXTO ARRIBA / ABAJO */
+  top: -30px;   /* antes estaba más arriba */
 
-    .active {
-      opacity: 1;
-    }
-  </style>
+  /* 👈 MOVER TEXTO IZQ / DER */
+  left: 61px;
+
+  color: white;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+
+  display: none;
+  z-index: 10; /* 🔥 CLAVE para que se vea sobre los iframes */
+}
+
+/* CAJA DONDE SE INTERCALAN */
+.widget-box {
+  position: relative;
+  width: 600px;
+  height: 500px;
+}
+
+/* WIDGETS SUPERPUESTOS */
+.widget {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.widget.active {
+  opacity: 1;
+}
+
+/* TOP GIFTER */
+.topgifter iframe {
+  width: 600px;
+  height: 400px;
+  border: 0;
+}
+
+/* RANKING (RECORTADO) */
+.clip {
+  width: 350px;
+  height: 500px;
+  overflow: hidden;
+}
+
+.clip iframe {
+  width: 900px;
+  height: 500px;
+  border: 0;
+}
+</style>
 </head>
 
 <body>
-  <div class="canvas">
-    <div class="center-box">
 
-      <!-- TEXTO SOLO PARA RANKING -->
-      <div class="title" id="rankingTitle">TOP 3 DEL MES</div>
+<div class="canvas">
+  <div class="stage">
 
-      <!-- RANKING -->
-      <iframe
-        id="ranking"
-        class="widget active"
-        src="https://tikfinity.zerody.one/widget/ranking?cid=2146077">
-      </iframe>
+    <!-- TEXTOS -->
+    <div class="title" id="title-donates">TOP DONATES</div>
+    <div class="title" id="title-ranking">TOP 3 DEL MES</div>
+
+    <!-- CAJA DE WIDGETS -->
+    <div class="widget-box">
 
       <!-- TOP GIFTER -->
-      <iframe
-        id="topgifter"
-        class="widget"
-        src="https://tikfinity.zerody.one/widget/topgifter?cid=2146077">
-      </iframe>
+      <div class="widget active topgifter" id="widget-donates">
+        <iframe
+          src="https://tikfinity.zerody.one/widget/topgifter?cid=2146077">
+        </iframe>
+      </div>
+
+      <!-- RANKING -->
+      <div class="widget ranking" id="widget-ranking">
+        <div class="clip">
+          <iframe
+            src="https://tikfinity.zerody.one/widget/ranking?cid=2146077">
+          </iframe>
+        </div>
+      </div>
 
     </div>
+
   </div>
+</div>
 
-  <script>
-    const ranking = document.getElementById("ranking");
-    const topgifter = document.getElementById("topgifter");
-    const title = document.getElementById("rankingTitle");
+<script>
+const widgets = [
+  {
+    el: document.getElementById('widget-donates'),
+    title: document.getElementById('title-donates')
+  },
+  {
+    el: document.getElementById('widget-ranking'),
+    title: document.getElementById('title-ranking')
+  }
+];
 
-    let showRanking = true;
+let current = 0;
 
-    setInterval(() => {
-      showRanking = !showRanking;
+function show(index) {
+  widgets.forEach((w, i) => {
+    w.el.classList.toggle('active', i === index);
+    w.title.style.display = i === index ? 'block' : 'none';
+  });
+}
 
-      if (showRanking) {
-        ranking.classList.add("active");
-        topgifter.classList.remove("active");
-        title.style.display = "block";
-      } else {
-        ranking.classList.remove("active");
-        topgifter.classList.add("active");
-        title.style.display = "none";
-      }
-    }, 15000); // ⬅️ 15 segundos
-  </script>
+show(current);
+
+setInterval(() => {
+  current = (current + 1) % widgets.length;
+  show(current);
+}, 15000); // ⏱ 15 segundos
+</script>
+
 </body>
 </html>
